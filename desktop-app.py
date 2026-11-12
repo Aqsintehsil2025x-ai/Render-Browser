@@ -5,7 +5,7 @@ from tkinter import ttk, messagebox
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 
-MODEL="Qwen/Qwen2.5-0.5B-Instruct-GGUF:Q4_K_M"
+MODEL="Qwen/Qwen2.5-1.5B-Instruct-GGUF:Q4_K_M"
 LOCAL_BASE="http://127.0.0.1:8080/v1"
 LOCAL_HEALTH="http://127.0.0.1:8080/health"
 BG="#0b1020"; SIDE="#0e1628"; PANEL="#121d30"; PANEL2="#1a2940"
@@ -13,10 +13,10 @@ FG="#e8eef8"; MUTED="#91a2bb"; ACCENT="#9aa8ff"; GREEN="#69d6ae"
 
 class DesktopAI:
     def __init__(self, root):
-        self.root=root; root.title("Render Browser · XFA"); root.geometry("1180x780"); root.minsize(760,560); root.configure(bg=BG)
+        self.root=root; root.title("RENDER // XFA — NEURAL DESKTOP"); root.geometry("1280x820"); root.minsize(900,620); root.configure(bg=BG)
         self.proc=None; self.events=queue.Queue(); self.messages=[]; self.api_key=""; self.base=LOCAL_BASE; self.model=MODEL
         self.xfa_url="https://ai-bot-2--aqsintehsil2025.replit.app/xfa/api"; self.xfa_token=""
-        self.mode=tk.StringVar(value="Local AI"); self.busy=False
+        self.mode=tk.StringVar(value="Local AI"); self.busy=False; self.system_prompt="Sen Render Browser içinde çalışan, Türkçe konuşan yardımcı yapay zekâsın. Varsayılan dilin Türkiye Türkçesi olsun. Kullanıcı Azerbaycan Türkçesiyle yazarsa doğal Azerbaycan Türkçesiyle cevap ver. Kısa, açık ve dostça konuş. Bilmediğin şeyleri uydurma; küçük bir yerel model olduğunu unutma."
         self._build(); root.after(100,self._drain_events); root.protocol("WM_DELETE_WINDOW",self.close)
         self.set_status("Hazır · Yerel model başlatılmayı bekliyor")
 
@@ -26,10 +26,12 @@ class DesktopAI:
         st.map("TButton",background=[("active","#2a3b59")])
         st.configure("Accent.TButton",padding=(16,10),background=ACCENT,foreground="#0b1020",font=("Sans",10,"bold"))
         st.map("Accent.TButton",background=[("active","#b5beff")])
-        st.configure("TEntry",fieldbackground=PANEL2,foreground=FG,insertcolor=FG,padding=9)
+        st.configure("TEntry",fieldbackground="#101b2e",foreground=FG,insertcolor=FG,padding=10, bordercolor="#344767", lightcolor="#344767", darkcolor="#344767")
+        st.configure("TCombobox",fieldbackground="#101b2e",background="#1c2b45",foreground=FG,arrowcolor=ACCENT,padding=8)
+        st.map("TCombobox",fieldbackground=[("readonly","#101b2e")],foreground=[("readonly",FG)],selectbackground=[("readonly","#263957")],selectforeground=[("readonly",FG)])
         shell=tk.Frame(self.root,bg=BG); shell.pack(fill="both",expand=True)
         side=tk.Frame(shell,bg=SIDE,width=230); side.pack(side="left",fill="y"); side.pack_propagate(False)
-        tk.Label(side,text="✿  RENDER / XFA",bg=SIDE,fg=FG,font=("Sans",13,"bold")).pack(anchor="w",padx=18,pady=(24,25))
+        tk.Label(side,text="◈  RENDER / XFA",bg=SIDE,fg="#aab7ff",font=("Sans",14,"bold")).pack(anchor="w",padx=18,pady=(24,25))
         tk.Button(side,text="＋   Yeni sohbet",command=self.new_chat,bg="#202e47",fg=FG,activebackground="#2a3b59",activeforeground=FG,relief="flat",anchor="w",padx=13,pady=11).pack(fill="x",padx=12)
         tk.Label(side,text="ÇALIŞMA ALANI",bg=SIDE,fg="#71839f",font=("Sans",8,"bold")).pack(anchor="w",padx=18,pady=(28,9))
         self.nav=tk.Label(side,text="●  Local AI",bg=SIDE,fg=GREEN,font=("Sans",10),anchor="w"); self.nav.pack(fill="x",padx=18,pady=5)
@@ -39,22 +41,23 @@ class DesktopAI:
         tk.Button(side,text="⚙   Ayarlar ve bağlantılar",command=self.open_settings,bg=SIDE,fg=MUTED,activebackground=PANEL2,activeforeground=FG,relief="flat",anchor="w",padx=13,pady=10).pack(fill="x",padx=8,side="bottom",pady=14)
         main=tk.Frame(shell,bg=BG); main.pack(side="left",fill="both",expand=True)
         head=tk.Frame(main,bg=BG); head.pack(fill="x",padx=28,pady=(20,12))
-        tk.Label(head,text="Sohbet",bg=BG,fg=FG,font=("Sans",17,"bold")).pack(side="left")
+        tk.Label(head,text="NEURAL CHAT",bg=BG,fg=FG,font=("Sans",19,"bold")).pack(side="left")
+        tk.Label(head,text="  ●  PRIVATE LOCAL SESSION",bg=BG,fg=GREEN,font=("Sans",8,"bold")).pack(side="left",padx=14,pady=(7,0))
         self.modebox=ttk.Combobox(head,textvariable=self.mode,values=("Local AI","API Model","XFA Agent"),state="readonly",width=15); self.modebox.pack(side="right"); self.modebox.bind("<<ComboboxSelected>>",self._mode_changed)
         self.chat=tk.Text(main,bg=BG,fg=FG,insertbackground=FG,wrap="word",font=("Sans",11),relief="flat",padx=28,pady=12,state="disabled",borderwidth=0)
         self.chat.pack(fill="both",expand=True,padx=4)
-        self.chat.tag_configure("un",foreground=ACCENT,font=("Sans",10,"bold"),spacing1=18)
-        self.chat.tag_configure("ub",foreground=FG,lmargin1=12,lmargin2=12,rmargin=80,spacing3=16)
-        self.chat.tag_configure("an",foreground=GREEN,font=("Sans",10,"bold"),spacing1=18)
-        self.chat.tag_configure("ab",foreground=FG,lmargin1=12,lmargin2=12,rmargin=70,spacing3=18)
+        self.chat.tag_configure("un",foreground="#b9c4ff",font=("Sans",10,"bold"),spacing1=20)
+        self.chat.tag_configure("ub",foreground=FG,lmargin1=16,lmargin2=16,rmargin=90,spacing3=20,background="#111a2b")
+        self.chat.tag_configure("an",foreground="#71f0c4",font=("Sans",10,"bold"),spacing1=20)
+        self.chat.tag_configure("ab",foreground=FG,lmargin1=16,lmargin2=16,rmargin=90,spacing3=22,background="#101f27")
         self.chat.tag_configure("sys",foreground=MUTED,font=("Sans",9,"italic"),spacing1=8,spacing3=10)
-        self._system("Merhaba! Yerel modelle çevrimdışı sohbet edebilir veya XFA Agent modunda görev planlayıp araştırma yapabilirsin.")
+        self._system("SİSTEM HAZIR  //  Merhaba! Ben Render AI. Türkçe konuşabilir, yerel modelle çevrimdışı çalışabilirim.")
         wrap=tk.Frame(main,bg=BG); wrap.pack(fill="x",padx=26,pady=(8,8))
         comp=tk.Frame(wrap,bg=PANEL,highlightbackground="#293954",highlightthickness=1); comp.pack(fill="x")
         self.prompt=tk.Text(comp,height=3,bg=PANEL,fg=FG,insertbackground=FG,wrap="word",relief="flat",font=("Sans",11),padx=14,pady=12)
         self.prompt.pack(fill="x",padx=2,pady=(2,0)); self.prompt.bind("<Return>",self._enter); self.prompt.bind("<Shift-Return>",self._newline)
         bar=tk.Frame(comp,bg=PANEL); bar.pack(fill="x",padx=9,pady=(2,8))
-        tk.Label(bar,text="Enter gönderir · Shift+Enter yeni satır",bg=PANEL,fg=MUTED,font=("Sans",8)).pack(side="left",padx=5)
+        tk.Label(bar,text="ENTER  GÖNDER   ·   SHIFT + ENTER  YENİ SATIR",bg=PANEL,fg="#8da2c2",font=("Sans",8,"bold")).pack(side="left",padx=5)
         self.sendbtn=ttk.Button(bar,text="Gönder  ↑",style="Accent.TButton",command=self.send); self.sendbtn.pack(side="right")
         foot=tk.Frame(main,bg=BG); foot.pack(fill="x",padx=29,pady=(0,10))
         self.status=tk.StringVar(); tk.Label(foot,textvariable=self.status,bg=BG,fg=MUTED,font=("Sans",8),anchor="w").pack(side="left")
@@ -133,7 +136,7 @@ class DesktopAI:
             h={"Content-Type":"application/json"}
             if mode=="API Model" and self.api_key:h["Authorization"]="Bearer "+self.api_key
             base=LOCAL_BASE if mode=="Local AI" else self.base; model=MODEL if mode=="Local AI" else self.model
-            body={"model":model,"messages":self.messages,"temperature":0.7,"max_tokens":512,"stream":False}
+            body={"model":model,"messages":[{"role":"system","content":self.system_prompt}]+self.messages,"temperature":0.65,"max_tokens":640,"stream":False}
             _,raw=self._request(base+"/chat/completions",body,h,300)
             answer=json.loads(raw.decode())["choices"][0]["message"]["content"]
             self.messages.append({"role":"assistant","content":answer}); self.events.put(("answer",answer))
