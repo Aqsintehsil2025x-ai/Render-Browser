@@ -59,3 +59,20 @@ Open http://localhost:10000.
 - Render Free services may sleep when idle; paid service options and persistent disks have separate costs.
 - Browser session persistence depends on a mounted persistent disk.
 - No automatic login, keep-alive clicks, or background activity simulation is included.
+
+## Unified desktop chat: Local AI + XFA
+
+The native desktop app now uses a dark, chat-first layout with a single conversation window.
+Choose **Local AI** for the local llama.cpp server, **API Model** for an OpenAI-compatible
+endpoint, or **XFA Agent** to send a bounded research task to the XFA service.
+
+Open **Settings and connections** in the sidebar to configure the API URL/model/key and
+the XFA API URL/access token. The XFA token is kept in application memory only and is
+not written to disk. XFA mode calls the authenticated `/tasks/run` endpoint; the XFA
+server must already be deployed with its `XFA_ACCESS_TOKEN`, planner credentials,
+and any optional remote-browser configuration. The desktop app does not install or
+deploy the XFA server for you.
+
+On Linux, launch with `bash run-desktop.sh`. If Tkinter is missing, the launcher
+runs `install-desktop.sh`, which installs the distro package (including `tk` on
+Arch-based systems) through the system package manager and sudo.
