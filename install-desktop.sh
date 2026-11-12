@@ -26,14 +26,15 @@ install_tkinter() {
 }
 
 install_tkinter
-mkdir -p "$HOME/.local/share/applications"
+mkdir -p "$HOME/.local/share/applications" "$HOME/.local/share/icons/hicolor/scalable/apps"
+install -m 644 "$ROOT/assets/xyrin-flower.svg" "$HOME/.local/share/icons/hicolor/scalable/apps/xyrin-flower.svg"
 cat > "$HOME/.local/share/applications/render-browser-local-ai.desktop" <<EOF
 [Desktop Entry]
 Type=Application
-Name=Render Browser Local AI
-Comment=Chat with a local offline language model
+Name=Xyrin Flower - Render AI
+Comment=Xyrin Flower neural desktop and offline AI chat
 Exec=$ROOT/run-desktop.sh
-Icon=applications-internet
+Icon=xyrin-flower
 Terminal=false
 Categories=Utility;Development;
 StartupNotify=true
