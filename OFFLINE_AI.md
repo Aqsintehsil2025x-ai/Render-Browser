@@ -24,9 +24,16 @@ This is a small starter model, not a high-capability assistant. It may make mist
 
 The service is private and has no public URL. Keep `LLAMA_API_KEY` secret. The model server's built-in file/agent tools are not enabled.
 
-## Integration status
+## Connect the browser to the AI service
 
-The browser-to-AI proxy and chat page are not implemented in this phase. The AI service must not be exposed publicly to make the browser integration easier. The next code change should add an authenticated same-origin proxy to the browser service, with the API key kept server-side.
+After the AI service is healthy, open its Render Dashboard **Connect > Internal** section and copy its internal HTTP address. In the existing browser Web Service Environment, set:
+
+- `AI_SERVICE_URL`: the AI service internal address, including `http://` and port `10000`, with no trailing slash.
+- `AI_API_KEY`: the exact same base64-style key entered as `LLAMA_API_KEY` for the AI service.
+
+Redeploy the browser service. Open `/ai/` on the browser URL while signed in with the browser Basic Auth credentials. The page sends requests to the browser service's `/ai-api/` route; Nginx injects the API key server-side and forwards requests over Render private networking. The key is not sent to browser JavaScript. Keep the AI service private and do not expose it publicly.
+
+The chat UI is intentionally minimal and sends non-streaming chat requests with a short output limit.
 
 ## Offline meaning
 
