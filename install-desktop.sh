@@ -27,18 +27,25 @@ install_tkinter() {
 
 install_tkinter
 mkdir -p "$HOME/.local/share/applications" "$HOME/.local/share/icons/hicolor/scalable/apps"
-install -m 644 "$ROOT/assets/xyrin-flower.svg" "$HOME/.local/share/icons/hicolor/scalable/apps/xyrin-flower.svg"
+install -m 644 "$ROOT/xyrin-flower.svg" "$HOME/.local/share/icons/hicolor/scalable/apps/xyrin-flower.svg"
 cat > "$HOME/.local/share/applications/render-browser-local-ai.desktop" <<EOF
 [Desktop Entry]
 Type=Application
 Name=Xyrin Flower - Render AI
 Comment=Xyrin Flower neural desktop and offline AI chat
 Exec=$ROOT/run-desktop.sh
-Icon=xyrin-flower
+Icon=$HOME/.local/share/icons/hicolor/scalable/apps/xyrin-flower.svg
 Terminal=false
 Categories=Utility;Development;
 StartupNotify=true
 EOF
 chmod +x "$ROOT/run-desktop.sh"
 chmod +x "$HOME/.local/share/applications/render-browser-local-ai.desktop"
-echo "Installed in your desktop application menu: Render Browser Local AI"
+if command -v update-desktop-database >/dev/null 2>&1; then
+  update-desktop-database "$HOME/.local/share/applications" >/dev/null 2>&1 || true
+fi
+if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+  gtk-update-icon-cache -f -t "$HOME/.local/share/icons/hicolor" >/dev/null 2>&1 || true
+fi
+echo "Installed in your desktop application menu: Xyrin Flower - Render AI"
+echo "Icon: $HOME/.local/share/icons/hicolor/scalable/apps/xyrin-flower.svg"
