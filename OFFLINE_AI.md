@@ -2,58 +2,40 @@
 
 ## Status
 
-This is a deployment design, not an enabled feature yet. The browser image does not currently run an AI model. Keep AI disabled until a separate inference service has been deployed and tested.
+This is an optional, separate inference service. It is not part of the browser container and is not deployed until you explicitly create it from `render-ai.yaml` in Render.
 
-## Recommended starter model
+## Model
 
-- Model: Qwen2.5-0.5B-Instruct, GGUF, Q4_K_M
-- Publisher: Qwen
-- Model repository: https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF
-- Approximate file size: 491 MB
-- License shown on the model card: Apache-2.0
-- Runtime: llama.cpp server (OpenAI-compatible API)
+- Qwen2.5-0.5B-Instruct GGUF, Q4_K_M quantization.
+- Official model: https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF
+- The Q4_K_M variant is listed at approximately 491 MB and the model is Apache-2.0 licensed.
+- llama.cpp provides an official server container and supports Hugging Face model downloads with `-hf`.
 
-This is a small starter model, not a frontier-quality assistant. It can handle simple chat and short tasks, but its reasoning, coding, factual reliability, and Azerbaijani/Turkish output may be limited. Test it with real prompts before treating it as useful.
+This is a small starter model, not a high-capability assistant. It may make mistakes and its Azerbaijani/Turkish quality must be tested; do not rely on it for important decisions.
 
-## Architecture
+## Deploy the AI service (manual opt-in)
 
-Keep the browser and model inference in separate Render services:
+1. In Render, create a new Blueprint from this repository and set the Blueprint file to `render-ai.yaml`.
+2. Select the same region as the existing browser service so private networking can work.
+3. Review the selected compute plan and persistent-disk cost in Render before applying. This Blueprint creates a paid private service and a 2 GB persistent disk; do not apply it unless you approve those costs.
+4. Enter a new, unique, long random value for `LLAMA_API_KEY` when prompted. Do not reuse the browser password or any account password.
+5. Apply the Blueprint and wait for the AI service health check at `/health` to pass.
+6. The first boot downloads the model and needs internet. The cache is stored under `/data/huggingface-cache`; subsequent starts reuse the persisted cache.
 
-1. `render-browser`: Chromium/noVNC, protected by the existing browser Basic Auth.
-2. `render-browser-ai`: llama.cpp server, with the GGUF model stored under `/data`.
-3. The browser service may proxy an authenticated `/ai/` path to the AI service over Render's private network after that connection is configured and tested.
+The service is private and has no public URL. Keep `LLAMA_API_KEY` secret. The model server's built-in file/agent tools are not enabled.
 
-Do not run Chromium and the model in the same 512 MB Free instance. Render documents Free web services as 512 MB RAM, and the Q4_K_M model file itself is about 491 MB before runtime memory, context cache, and Chromium are counted. A separate AI service with more memory is the practical design; choose its plan based on measured RAM use.
+## Integration status
 
-## Model download and persistence
+The browser-to-AI proxy and chat page are not implemented in this phase. The AI service must not be exposed publicly to make the browser integration easier. The next code change should add an authenticated same-origin proxy to the browser service, with the API key kept server-side.
 
-- Do not commit the `.gguf` model into Git. It is large and should be downloaded by the AI service on first startup.
-- Set the model cache/model directory to `/data`.
-- A persistent disk mounted at `/data` is needed if the model must survive service restarts and redeploys. Render documents persistent disks as paid-service storage; Free web services do not support them.
-- The first model download requires internet. After it is cached, text generation can run locally on the AI service without calling an external model API. The overall browser still needs internet to open websites such as Replit.
+## Offline meaning
 
-## Required safeguards before enabling
+After the model is downloaded and cached, text generation runs on the AI service without calling an external model API. The browser itself still needs internet to access websites such as Replit. Initial setup/model download also needs internet.
 
-- Keep the AI service private; do not expose an unauthenticated inference endpoint publicly.
-- Require a long random `AI_API_KEY` and keep it only in Render Environment, never in GitHub.
-- Do not enable llama.cpp's built-in file, shell, or agent tools. This project only needs text generation.
-- Proxy requests through the authenticated browser service; do not put the AI key in browser JavaScript.
-- Add request size, context length, output-token, and timeout limits.
-- Do not use periodic pings or scripted browser actions to evade Replit or another provider's idle/session rules.
+## Important limitations
 
-## Render constraints
-
-- Render Free web services use 512 MB RAM, can spin down after inactivity, and do not support persistent disks or private networking.
-- A separate private AI service and persistent model cache therefore require an appropriate paid Render setup. Check current plan pricing before enabling anything that may incur charges.
-- A Render service staying awake does not guarantee a Replit workspace stays active. Replit controls its own session and idle behavior.
-
-## Next implementation steps
-
-1. Choose and provision a suitable AI service plan and persistent disk.
-2. Add a pinned llama.cpp server image and startup configuration that downloads the model once into `/data`.
-3. Configure the AI service API key and private networking.
-4. Add an authenticated `/ai/` reverse-proxy route to the browser service.
-5. Add a small chat page that calls only that same-origin proxy.
-6. Test memory use, model startup, authentication, and chat end-to-end before enabling it.
-
-No service, disk, model download, or paid resource is created by this documentation change.
+- This small model is not comparable to a large hosted assistant.
+- Model file size is not the same as required RAM; inference also needs memory for runtime, context, and KV cache. Measure on the selected Render plan.
+- A Render service staying awake does not guarantee a Replit workspace stays active. Replit controls its own idle/session behavior.
+- Do not use periodic pings or scripted browser actions to evade another provider's idle/session rules.
+- Do not commit model weights, browser profiles, credentials, or API keys to Git.
