@@ -55,8 +55,8 @@ The API settings support a custom OpenAI-compatible base URL, model ID, and opti
 You do not need Render for this test. The first setup/download needs internet, but after the model is cached you can disconnect and run it locally.
 
 1. On Linux, install the official llama.cpp command-line app with `curl -LsSf https://llama.app/install.sh | sh`, then open a new terminal and check `llama --version`. This install command is from the llama.cpp team's official installation guide.
-2. In this repository, run `bash local-ai.sh`. It downloads/caches Turkish Gemma 3 12B Q4_K_M and starts the local model API on `127.0.0.1:8080`, plus this chat page on `127.0.0.1:8000`.
-4. Open `http://127.0.0.1:8000`, set API base URL to `http://127.0.0.1:8080/v1`, model ID to `celalkartoglu/turkish-assistant-gemma3-12b-Q4_K_M-GGUF:Q4_K_M`, leave API key blank, and press Apply settings.
+2. In this repository, run `bash local-ai.sh`. It downloads/caches Turkish Gemma 3 12B Q4_K_M and starts the local model API on `127.0.0.1:8081`, plus this chat page on `127.0.0.1:8000`.
+4. Open `http://127.0.0.1:8000`, set API base URL to `http://127.0.0.1:8081/v1`, model ID to `celalkartoglu/turkish-assistant-gemma3-12b-Q4_K_M-GGUF:Q4_K_M`, leave API key blank, and press Apply settings.
 5. After the first download has completed, stop the script with Ctrl+C, disconnect from the internet, run `bash local-ai.sh` again and test another message. The model should use its local cache. Keep the local server running while chatting.
 
 The script binds both services to `127.0.0.1` so they are not exposed to your LAN. It allows the localhost origin because the chat page and local model API use different local ports. The model is assigned the same alias as the Model ID field.
