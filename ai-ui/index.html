@@ -9,31 +9,47 @@
     body{margin:0;min-height:100vh;display:grid;place-items:center;padding:20px;box-sizing:border-box}
     main{width:min(760px,100%);background:#1a202b;border:1px solid #303a4a;border-radius:18px;padding:22px;box-sizing:border-box}
     h1{margin:0 0 6px;font-size:1.35rem}p{color:#aab6c8;line-height:1.5}
-    #status{font-size:.9rem}#chat{height:48vh;min-height:260px;overflow:auto;background:#111722;border-radius:12px;padding:12px;margin:16px 0}
+    #status{font-size:.9rem}#chat{height:42vh;min-height:240px;overflow:auto;background:#111722;border-radius:12px;padding:12px;margin:16px 0}
     .msg{white-space:pre-wrap;overflow-wrap:anywhere;padding:10px 12px;border-radius:10px;margin:8px 0;max-width:90%}
     .user{background:#263c5c;margin-left:auto}.assistant{background:#252d3a}
-    form{display:flex;gap:8px}textarea{flex:1;resize:vertical;min-height:52px;max-height:180px;background:#111722;color:#fff;border:1px solid #46536a;border-radius:10px;padding:12px;font:inherit}
-    button{background:#8bb8ff;color:#101722;border:0;border-radius:10px;padding:0 18px;font-weight:700;cursor:pointer}button:disabled{opacity:.5;cursor:wait}
-    a{color:#9bc5ff}
+    form{display:flex;gap:8px}textarea,input{box-sizing:border-box;background:#111722;color:#fff;border:1px solid #46536a;border-radius:10px;padding:12px;font:inherit;width:100%}
+    textarea{flex:1;resize:vertical;min-height:52px;max-height:180px}
+    button{background:#8bb8ff;color:#101722;border:0;border-radius:10px;padding:10px 18px;font-weight:700;cursor:pointer}button:disabled{opacity:.5;cursor:wait}
+    details{border:1px solid #39465a;border-radius:12px;padding:12px;margin:12px 0}summary{cursor:pointer;font-weight:700}
+    .settings{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.field label{display:block;color:#aab6c8;font-size:.85rem;margin:0 0 5px}.field.wide{grid-column:1/-1}
+    .hint{font-size:.82rem}a{color:#9bc5ff}
+    @media(max-width:560px){.settings{grid-template-columns:1fr}form{flex-direction:column}button{min-height:44px}}
   </style>
 </head>
 <body>
 <main>
   <h1>Local AI</h1>
-  <p>Qwen2.5 0.5B · llama.cpp · private inference service</p>
-  <p id="status">Checking the AI service…</p>
+  <p>Use a local model offline, or connect an OpenAI-compatible API.</p>
+  <p id="status">Configure a model endpoint to begin.</p>
+  <details open>
+    <summary>Model / API settings</summary>
+    <div class="settings">
+      <div class="field wide"><label for="endpoint">API base URL</label><input id="endpoint" value="/ai-api/v1" placeholder="http://127.0.0.1:8080/v1"></div>
+      <div class="field"><label for="model">Model ID</label><input id="model" value="Qwen/Qwen2.5-0.5B-Instruct-GGUF:Q4_K_M"></div>
+      <div class="field"><label for="apiKey">API key (optional)</label><input id="apiKey" type="password" autocomplete="off" placeholder="Paste API key"></div>
+    </div>
+    <p class="hint">Settings and API key stay in this tab's memory only; they are not saved. Only use trusted API providers. For local offline use, set URL to http://127.0.0.1:8080/v1 and leave API key empty.</p>
+    <button id="apply" type="button">Apply settings</button>
+  </details>
   <section id="chat" aria-live="polite"></section>
   <form id="form"><textarea id="prompt" maxlength="4000" placeholder="Write a message…" required></textarea><button id="send">Send</button></form>
   <p><a href="/">Back to remote browser</a></p>
 </main>
 <script>
 const chat=document.querySelector('#chat'),statusEl=document.querySelector('#status'),form=document.querySelector('#form'),promptEl=document.querySelector('#prompt'),send=document.querySelector('#send');
-const messages=[];
+const endpointEl=document.querySelector('#endpoint'),modelEl=document.querySelector('#model'),keyEl=document.querySelector('#apiKey'),apply=document.querySelector('#apply');
+let messages=[],config={endpoint:endpointEl.value,model:modelEl.value,key:''};
 function add(role,text){const el=document.createElement('div');el.className='msg '+role;el.textContent=text;chat.append(el);chat.scrollTop=chat.scrollHeight;}
-async function health(){try{const r=await fetch('/ai-api/health');if(!r.ok)throw new Error('HTTP '+r.status);statusEl.textContent='AI service is ready.';}catch(e){statusEl.textContent='AI service is not connected yet. Configure AI_SERVICE_URL and AI_API_KEY in the browser service environment.';}}
-form.addEventListener('submit',async e=>{e.preventDefault();const text=promptEl.value.trim();if(!text||send.disabled)return;messages.push({role:'user',content:text});add('user',text);promptEl.value='';send.disabled=true;statusEl.textContent='Generating…';
-try{const r=await fetch('/ai-api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'Qwen/Qwen2.5-0.5B-Instruct-GGUF:Q4_K_M',messages,temperature:0.7,max_tokens:256,stream:false})});if(!r.ok)throw new Error('AI request failed: HTTP '+r.status);const data=await r.json();const answer=data.choices?.[0]?.message?.content||'No response returned.';messages.push({role:'assistant',content:answer});add('assistant',answer);statusEl.textContent='Ready.';}catch(err){messages.pop();add('assistant','Could not reach the AI service. Check its deployment and private connection.');statusEl.textContent=String(err);}finally{send.disabled=false;promptEl.focus();}});
-health();
+function applySettings(){config={endpoint:endpointEl.value.trim().replace(/\\/$/,''),model:modelEl.value.trim(),key:keyEl.value};messages=[];chat.replaceChildren();statusEl.textContent='Settings applied. Send a message to test the connection.';}
+apply.addEventListener('click',applySettings);
+form.addEventListener('submit',async e=>{e.preventDefault();const text=promptEl.value.trim();if(!text||send.disabled)return;if(!config.endpoint||!config.model){statusEl.textContent='Enter an API base URL and model ID.';return;}messages.push({role:'user',content:text});add('user',text);promptEl.value='';send.disabled=true;statusEl.textContent='Generating…';
+try{const headers={'Content-Type':'application/json'};if(config.key)headers.Authorization='Bearer '+config.key;const r=await fetch(config.endpoint+'/chat/completions',{method:'POST',headers,body:JSON.stringify({model:config.model,messages,temperature:0.7,max_tokens:256,stream:false})});if(!r.ok)throw new Error('API request failed: HTTP '+r.status);const data=await r.json();const answer=data.choices?.[0]?.message?.content||'No response returned.';messages.push({role:'assistant',content:answer});add('assistant',answer);statusEl.textContent='Ready.';}catch(err){messages.pop();add('assistant','Could not connect. Check the URL, model ID, API key, server, and CORS settings.');statusEl.textContent=String(err);}finally{send.disabled=false;promptEl.focus();}});
+applySettings();
 </script>
 </body>
 </html>
