@@ -26,6 +26,10 @@ It exposes Chromium through noVNC; it does not expose a shell or terminal in the
 
 The noVNC desktop opens Chromium. Navigate to Replit manually and sign in directly there. Never send account passwords or session cookies in chat.
 
+## Optional offline AI
+
+See [OFFLINE_AI.md](OFFLINE_AI.md) for the proposed small local model, separate-service architecture, Render memory/storage limits, and security requirements. Offline inference is not enabled in the browser container yet; do not add model weights or secrets to Git.
+
 ## Local test
 
 ```bash
