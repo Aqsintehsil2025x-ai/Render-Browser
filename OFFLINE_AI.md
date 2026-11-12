@@ -11,7 +11,7 @@ This is an optional, separate inference service. It is not part of the browser c
 - The Q4_K_M variant is approximately 7.3 GB and the model is Apache-2.0 licensed.
 - llama.cpp provides an official server container and supports Hugging Face model downloads with `-hf`.
 
-Turkish Gemma 3 12B has 4.0 billion parameters and supports more than 100 languages and dialects. The Q4_K_M file is approximately 2.5 GB. The desktop app adds a Turkish-first system instruction (and asks the model to reply in Azerbaijani Turkish when the user writes that way). Output quality still depends on hardware and prompts; do not rely on it for important decisions.
+Turkish-assistant Gemma 3 12B is a Turkish-finetuned instruction model. Its Q4_K_M file is approximately 7.3 GB. The desktop app asks it to answer in the language used by the user, including Turkish and Azerbaijani Turkish. Runtime memory use is higher than the file size; performance depends on the computer.
 
 ## Deploy the AI service (manual opt-in)
 
