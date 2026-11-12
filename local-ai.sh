@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-MODEL="Qwen/Qwen2.5-0.5B-Instruct-GGUF:Q4_K_M"
+MODEL="Qwen/Qwen2.5-1.5B-Instruct-GGUF:Q4_K_M"
 
 if ! command -v llama >/dev/null 2>&1; then
   echo "llama command not found. Install the official llama.cpp CLI first (see OFFLINE_AI.md)." >&2
