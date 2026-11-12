@@ -1,0 +1,61 @@
+worker_processes 1;
+pid /run/nginx.pid;
+
+events { worker_connections 1024; }
+
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+    access_log /dev/stdout;
+    error_log /dev/stderr warn;
+    sendfile on;
+    map $http_upgrade $connection_upgrade {
+        default upgrade;
+        '' close;
+    }
+
+    server {
+        listen 10000;
+        server_name _;
+        auth_basic "Private browser";
+        auth_basic_user_file /etc/nginx/.htpasswd;
+
+        location = / {
+            return 302 /vnc.html?autoconnect=true&resize=remote&path=websockify;
+        }
+
+        location = /ai { return 302 /ai/; }
+
+        location /ai/ {
+            alias /opt/ai-ui/;
+            index index.html;
+            try_files $uri $uri/ /ai/index.html;
+        }
+
+        # The model API is reachable only through this authenticated browser service.
+        # The browser never receives the model API key.
+        location /ai-api/ {
+            proxy_pass ${AI_SERVICE_URL}/;
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header Authorization "Bearer ${AI_API_KEY}";
+            proxy_set_header Connection '';
+            proxy_buffering off;
+            proxy_read_timeout 300s;
+        }
+
+        location /websockify {
+            proxy_pass http://127.0.0.1:6080/websockify;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+            proxy_set_header Host $host;
+            proxy_read_timeout 3600s;
+        }
+
+        location / {
+            root /usr/share/novnc;
+            try_files $uri $uri/ =404;
+        }
+    }
+}
