@@ -13,9 +13,9 @@ if ! command -v python3 >/dev/null 2>&1; then
   exit 1
 fi
 
-echo "Starting local model server on 127.0.0.1:8080."
+echo "Starting local model server on 127.0.0.1:8081."
 echo "First run downloads the model; later runs use the local cache."
-llama serve -hf "$MODEL" --alias "$MODEL" --host 127.0.0.1 --port 8080 --ctx-size 2048 --n-predict 256 --parallel 1 --cors-origins localhost &
+llama serve -hf "$MODEL" --alias render-gemma3-12b --host 127.0.0.1 --port 8081 --ctx-size 2048 --n-predict 256 --parallel 1 --cors-origins localhost &
 MODEL_PID=$!
 cleanup(){ kill "$MODEL_PID" 2>/dev/null || true; }
 trap cleanup EXIT INT TERM
