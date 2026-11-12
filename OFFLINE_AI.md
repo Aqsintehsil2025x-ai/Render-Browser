@@ -35,6 +35,22 @@ Redeploy the browser service. Open `/ai/` on the browser URL while signed in wit
 
 The chat UI is intentionally minimal and sends non-streaming chat requests with a short output limit.
 
+## First test on your own PC (Linux)
+
+You do not need Render for this test. The first setup/download needs internet, but after the model is cached you can disconnect and run it locally.
+
+1. Install the official `llama.cpp` tools for your operating system. The upstream model card documents the install commands for Linux/macOS and Windows.
+2. In this repository, run `chmod +x local-ai.sh` once.
+3. While online the first time, run `./local-ai.sh`. It downloads/caches Qwen2.5-0.5B-Instruct Q4_K_M and starts the local model API on `127.0.0.1:8080`, plus this chat page on `127.0.0.1:8000`.
+4. Open `http://127.0.0.1:8000`, set API base URL to `http://127.0.0.1:8080/v1`, model ID to `Qwen/Qwen2.5-0.5B-Instruct-GGUF:Q4_K_M`, leave API key blank, and press Apply settings.
+5. After the first download has completed, disconnect from the internet and test another message. The model should use its local cache. Keep the local server running while chatting.
+
+The script binds both services to `127.0.0.1` so they are not exposed to your LAN. It enables CORS only because the chat page and local model API use different local ports. If your installed `llama-server` build does not recognize `--cors`, update llama.cpp using its official installation instructions.
+
+## Add another API
+
+Open **Model / API settings** on the chat page. Enter the provider's OpenAI-compatible base URL, model ID, and (if required) API key, then apply. The key is held only in the current tab's memory and is cleared when the tab is closed or refreshed; it is not written to local storage or Git. Only use providers you trust. Provider API use requires internet and may have separate costs. Some providers block browser-origin requests (CORS); use their supported client or a trusted same-origin backend rather than disabling browser security.
+
 ## Offline meaning
 
 After the model is downloaded and cached, text generation runs on the AI service without calling an external model API. The browser itself still needs internet to access websites such as Replit. Initial setup/model download also needs internet.
