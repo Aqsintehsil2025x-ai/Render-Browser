@@ -114,13 +114,33 @@ class DesktopAI:
         try:
             try:self._request(LOCAL_HEALTH,timeout=2); self.events.put(("status","Yerel model zaten çalışıyor.")); return
             except Exception:pass
+            log_dir=os.path.join(os.path.expanduser("~"),".local","state","render-browser")
+            os.makedirs(log_dir,exist_ok=True)
+            log_path=os.path.join(log_dir,"llama-12b.log")
+            log_file=open(log_path,"a",encoding="utf-8")
+            log_file.write("\\n\\n===== Render AI start =====\\n"); log_file.flush()
             cmd=["llama","serve","-hf",MODEL,"--alias",MODEL_ALIAS,"--host","127.0.0.1","--port","8081","--ctx-size","2048","--n-predict","256","--parallel","1"]
-            self.proc=subprocess.Popen(cmd,stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
+            try:
+                self.proc=subprocess.Popen(cmd,stdout=log_file,stderr=subprocess.STDOUT)
+            except Exception:
+                log_file.close()
+                raise
             for _ in range(240):
-                if self.proc.poll() is not None:raise RuntimeError("llama serve kapandı. Terminalde llama serve --help çıktısını kontrol et.")
-                try:self._request(LOCAL_HEALTH,timeout=2); self.events.put(("status","Yerel model hazır · çevrimdışı sohbet edebilirsin.")); return
+                if self.proc.poll() is not None:
+                    log_file.flush()
+                    with open(log_path,encoding="utf-8",errors="replace") as lf: tail=lf.read()[-5000:]
+                    log_file.close()
+                    raise RuntimeError("llama serve başlatılamadı. Günlük: "+log_path+"\\n\\n"+tail[-3000:])
+                try:
+                    self._request(LOCAL_HEALTH,timeout=2)
+                    log_file.flush()
+                    self.events.put(("status","Yerel model hazır · çevrimdışı sohbet edebilirsin."))
+                    return
                 except Exception:time.sleep(1)
-            raise TimeoutError("Model başlatma zaman aşımına uğradı; RAM ve model indirme durumunu kontrol et.")
+            log_file.flush()
+            with open(log_path,encoding="utf-8",errors="replace") as lf: tail=lf.read()[-5000:]
+            log_file.close()
+            raise TimeoutError("Model 4 dakika içinde başlamadı. Günlük: "+log_path+"\\n\\n"+tail[-3000:])
         except Exception as e:self.events.put(("error",str(e)))
     def send(self):
         if self.busy:return
