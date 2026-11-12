@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Render Browser Local AI
+Comment=Chat with a local offline language model
+Exec=sh -c 'cd "$HOME/Render-Browser" && ./run-desktop.sh'
+Icon=applications-internet
+Terminal=false
+Categories=Utility;Development;
+StartupNotify=true

@@ -26,6 +26,21 @@ It exposes Chromium through noVNC; it does not expose a shell or terminal in the
 
 The noVNC desktop opens Chromium. Navigate to Replit manually and sign in directly there. Never send account passwords or session cookies in chat.
 
+
+## Native Linux desktop app
+
+You can use the AI without opening a browser window. The native Tkinter desktop app starts and manages the local `llama serve` process, provides chat, and includes API base URL / model ID / API key settings. It uses only Python's standard library plus Tkinter.
+
+```bash
+bash install-desktop.sh
+```
+
+Then launch **Render Browser Local AI** from your desktop application menu. Or run `bash run-desktop.sh` from the repository folder. If Tkinter is missing, install your Linux distribution's `python3-tk` package. The first model download needs internet; once cached, local chat can run offline. The API key is kept in memory only and is not saved.
+
+## Optional offline AI
+
+See [OFFLINE_AI.md](OFFLINE_AI.md) for the optional model service and deployment steps. `render-ai.yaml` is a separate, opt-in Blueprint that creates a paid private service and persistent disk; review its costs before applying. The browser-to-AI proxy/chat page is not implemented yet. Do not add model weights or secrets to Git.
+
 ## Local test
 
 ```bash

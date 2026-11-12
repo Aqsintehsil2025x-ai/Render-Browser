@@ -1,0 +1,30 @@
+# Optional standalone local-inference service.
+# Select this file as the Blueprint file in Render; it is intentionally separate
+# from render.yaml so the existing browser service is not modified.
+
+services:
+  - type: pserv
+    name: render-browser-ai
+    runtime: image
+    image:
+      url: ghcr.io/ggml-org/llama.cpp:server
+    plan: starter
+    dockerCommand: >-
+      -hf Qwen/Qwen2.5-0.5B-Instruct-GGUF:Q4_K_M
+      --host 0.0.0.0
+      --port 10000
+      --ctx-size 2048
+      --n-predict 256
+      --parallel 1
+    envVars:
+      - key: LLAMA_CACHE
+        value: /data/huggingface-cache
+      - key: LLAMA_API_KEY
+        sync: false
+      - key: LLAMA_ARG_NO_WEBUI
+        value: "true"
+    disk:
+      name: render-browser-ai-model-cache
+      mountPath: /data
+      sizeGB: 2
+    healthCheckPath: /health
