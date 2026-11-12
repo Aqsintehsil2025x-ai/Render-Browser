@@ -5,7 +5,7 @@ from tkinter import ttk, messagebox
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 
-MODEL="Qwen/Qwen2.5-1.5B-Instruct-GGUF:Q4_K_M"
+MODEL="Qwen/Qwen3-4B-GGUF:Q4_K_M"
 LOCAL_BASE="http://127.0.0.1:8080/v1"
 LOCAL_HEALTH="http://127.0.0.1:8080/health"
 BG="#0b1020"; SIDE="#0e1628"; PANEL="#121d30"; PANEL2="#1a2940"
