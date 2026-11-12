@@ -70,7 +70,7 @@ class DesktopAI:
     def set_status(self,s): self.status.set(s)
     def _mode_changed(self,_=None):
         m=self.mode.get(); self.nav.configure(text="●  "+m,fg=GREEN if m=="Yerel Yapay Zekâ" else ACCENT)
-        self.set_status({"Local AI":"Yerel mod · modeli başlat veya çalışan sunucuya bağ","API Model":"API modu · harici model bağlantısı","XFA Agent":"XFA modu · görev planlama ve salt-okunur araştırma"}[m])
+        self.set_status({"Yerel Yapay Zekâ":"Yerel mod · modeli başlat veya çalışan sunucuya bağ","API Modeli":"API modu · harici model bağlantısı","XFA Agent":"XFA modu · görev planlama ve salt-okunur araştırma"}[m])
     def _enter(self,e):
         if not (e.state & 1): self.send(); return "break"
     def _newline(self,e): self.prompt.insert("insert","\n"); return "break"
