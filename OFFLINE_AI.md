@@ -35,6 +35,21 @@ Redeploy the browser service. Open `/ai/` on the browser URL while signed in wit
 
 The chat UI is intentionally minimal and sends non-streaming chat requests with a short output limit.
 
+
+## Native desktop app (no browser)
+
+On Linux, install the desktop menu entry from the repository folder:
+
+```bash
+bash install-desktop.sh
+```
+
+Open **Render Browser Local AI** from your application menu. Alternatively run `bash run-desktop.sh`. The app opens a native desktop window, starts `llama serve` itself when Local mode is selected, waits for `/health`, and then sends chat completions to the local server. It does not open Firefox, Chromium, or another browser.
+
+Requirements: Python 3, Tkinter (`python3-tk` on Debian/Ubuntu-family distributions), and the `llama` CLI on PATH. The first model download requires internet. After the model is cached, choose Local mode and chat offline. Closing the app stops the model process that the app started.
+
+The API settings support a custom OpenAI-compatible base URL, model ID, and optional API key. The key is held in application memory only and is not written to disk. API mode may require internet and provider billing. Only connect to services you trust.
+
 ## First test on your own PC (Linux)
 
 You do not need Render for this test. The first setup/download needs internet, but after the model is cached you can disconnect and run it locally.
