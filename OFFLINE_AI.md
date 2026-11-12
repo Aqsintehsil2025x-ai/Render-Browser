@@ -6,12 +6,12 @@ This is an optional, separate inference service. It is not part of the browser c
 
 ## Model
 
-- Qwen2.5-0.5B-Instruct GGUF, Q4_K_M quantization.
-- Official model: https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF
+- Qwen2.5-1.5B-Instruct GGUF, Q4_K_M quantization.
+- Official model: https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF
 - The Q4_K_M variant is listed at approximately 491 MB and the model is Apache-2.0 licensed.
 - llama.cpp provides an official server container and supports Hugging Face model downloads with `-hf`.
 
-This is a small starter model, not a high-capability assistant. It may make mistakes and its Azerbaijani/Turkish quality must be tested; do not rely on it for important decisions.
+This 1.54B-parameter quantized model is still a compact local assistant, not a high-capability hosted model. Qwen2.5 supports multilingual use; the desktop app adds a Turkish-first system instruction (and replies in Azerbaijani Turkish when the user writes that way). Output quality still depends on the prompt and hardware; do not rely on it for important decisions.
 
 ## Deploy the AI service (manual opt-in)
 
@@ -33,7 +33,7 @@ After the AI service is healthy, open its Render Dashboard **Connect > Internal*
 
 Redeploy the browser service. Open `/ai/` on the browser URL while signed in with the browser Basic Auth credentials. The page sends requests to the browser service's `/ai-api/` route; Nginx injects the API key server-side and forwards requests over Render private networking. The key is not sent to browser JavaScript. Keep the AI service private and do not expose it publicly.
 
-The chat UI is intentionally minimal and sends non-streaming chat requests with a short output limit.
+The native chat UI uses a Turkish-first system instruction and sends non-streaming chat requests with a moderate output limit.
 
 
 ## Native desktop app (no browser)
@@ -55,8 +55,8 @@ The API settings support a custom OpenAI-compatible base URL, model ID, and opti
 You do not need Render for this test. The first setup/download needs internet, but after the model is cached you can disconnect and run it locally.
 
 1. On Linux, install the official llama.cpp command-line app with `curl -LsSf https://llama.app/install.sh | sh`, then open a new terminal and check `llama --version`. This install command is from the llama.cpp team's official installation guide.
-2. In this repository, run `bash local-ai.sh`. It downloads/caches Qwen2.5-0.5B-Instruct Q4_K_M and starts the local model API on `127.0.0.1:8080`, plus this chat page on `127.0.0.1:8000`.
-4. Open `http://127.0.0.1:8000`, set API base URL to `http://127.0.0.1:8080/v1`, model ID to `Qwen/Qwen2.5-0.5B-Instruct-GGUF:Q4_K_M`, leave API key blank, and press Apply settings.
+2. In this repository, run `bash local-ai.sh`. It downloads/caches Qwen2.5-1.5B-Instruct Q4_K_M and starts the local model API on `127.0.0.1:8080`, plus this chat page on `127.0.0.1:8000`.
+4. Open `http://127.0.0.1:8000`, set API base URL to `http://127.0.0.1:8080/v1`, model ID to `Qwen/Qwen2.5-1.5B-Instruct-GGUF:Q4_K_M`, leave API key blank, and press Apply settings.
 5. After the first download has completed, stop the script with Ctrl+C, disconnect from the internet, run `bash local-ai.sh` again and test another message. The model should use its local cache. Keep the local server running while chatting.
 
 The script binds both services to `127.0.0.1` so they are not exposed to your LAN. It allows the localhost origin because the chat page and local model API use different local ports. The model is assigned the same alias as the Model ID field.
