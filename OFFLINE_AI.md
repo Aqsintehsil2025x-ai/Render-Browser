@@ -8,10 +8,10 @@ This is an optional, separate inference service. It is not part of the browser c
 
 - Qwen3-4B GGUF, Q4_K_M quantization.
 - Official model: https://huggingface.co/Qwen/Qwen3-4B-GGUF
-- The Q4_K_M variant is listed at approximately 491 MB and the model is Apache-2.0 licensed.
+- The Q4_K_M variant is listed at approximately 2.5 GB and the model is Apache-2.0 licensed.
 - llama.cpp provides an official server container and supports Hugging Face model downloads with `-hf`.
 
-This 1.54B-parameter quantized model is still a compact local assistant, not a high-capability hosted model. Qwen2.5 supports multilingual use; the desktop app adds a Turkish-first system instruction (and replies in Azerbaijani Turkish when the user writes that way). Output quality still depends on the prompt and hardware; do not rely on it for important decisions.
+Qwen3-4B has 4.0 billion parameters and supports more than 100 languages and dialects. The Q4_K_M file is approximately 2.5 GB. The desktop app adds a Turkish-first system instruction (and asks the model to reply in Azerbaijani Turkish when the user writes that way). Output quality still depends on hardware and prompts; do not rely on it for important decisions.
 
 ## Deploy the AI service (manual opt-in)
 
