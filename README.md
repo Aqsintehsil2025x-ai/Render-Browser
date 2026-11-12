@@ -28,7 +28,7 @@ The noVNC desktop opens Chromium. Navigate to Replit manually and sign in direct
 
 ## Optional offline AI
 
-See [OFFLINE_AI.md](OFFLINE_AI.md) for the proposed small local model, separate-service architecture, Render memory/storage limits, and security requirements. Offline inference is not enabled in the browser container yet; do not add model weights or secrets to Git.
+See [OFFLINE_AI.md](OFFLINE_AI.md) for the optional model service and deployment steps. `render-ai.yaml` is a separate, opt-in Blueprint that creates a paid private service and persistent disk; review its costs before applying. The browser-to-AI proxy/chat page is not implemented yet. Do not add model weights or secrets to Git.
 
 ## Local test
 
