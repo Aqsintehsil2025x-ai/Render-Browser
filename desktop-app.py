@@ -14,7 +14,7 @@ FG="#e8eef8"; MUTED="#91a2bb"; ACCENT="#9aa8ff"; GREEN="#69d6ae"
 
 class DesktopAI:
     def __init__(self, root):
-        self.root=root; root.title("RENDER // XFA — NEURAL DESKTOP"); sw=root.winfo_screenwidth(); sh=root.winfo_screenheight(); ww=min(1180,max(760,sw-80)); wh=min(760,max(520,sh-140)); root.geometry(f"{ww}x{wh}+40+40"); root.minsize(760,520); root.configure(bg=BG)
+        self.root=root; root.title("Xyrin Flower — Render // XFA"); sw=root.winfo_screenwidth(); sh=root.winfo_screenheight(); ww=min(1180,max(760,sw-80)); wh=min(760,max(520,sh-140)); root.geometry(f"{ww}x{wh}+40+40"); root.minsize(760,520); root.configure(bg=BG)
         self.proc=None; self.events=queue.Queue(); self.messages=[]; self.api_key=""; self.base=LOCAL_BASE; self.model=MODEL
         self.xfa_url="https://ai-bot-2--aqsintehsil2025.replit.app/xfa/api"; self.xfa_token=""
         self.mode=tk.StringVar(value="Yerel Yapay Zekâ"); self.busy=False; self.system_prompt="Sen Render Browser içinde çalışan Türkçe odaklı bir yardımcı yapay zekâsın. Her zaman kullanıcının yazdığı dilde yanıt ver: Türkiye Türkçesiyle yazarsa Türkiye Türkçesi, Azerbaycan Türkçesiyle yazarsa doğal Azerbaycan Türkçesi kullan. İngilizceye geçme. Cevapların açık, doğru ve doğal olsun. Bilmediğin şeyleri uydurma."
@@ -32,7 +32,18 @@ class DesktopAI:
         st.map("TCombobox",fieldbackground=[("readonly","#101b2e")],foreground=[("readonly",FG)],selectbackground=[("readonly","#263957")],selectforeground=[("readonly",FG)])
         shell=tk.Frame(self.root,bg=BG); shell.pack(fill="both",expand=True)
         side=tk.Frame(shell,bg=SIDE,width=230); side.pack(side="left",fill="y"); side.pack_propagate(False)
-        tk.Label(side,text="◈  RENDER / XFA",bg=SIDE,fg="#aab7ff",font=("Sans",14,"bold")).pack(anchor="w",padx=18,pady=(24,25))
+        brand=tk.Frame(side,bg=SIDE); brand.pack(fill="x",padx=16,pady=(18,24))
+        mark=tk.Canvas(brand,width=48,height=54,bg=SIDE,highlightthickness=0); mark.pack(side="left")
+        mark.create_line(24,49,31,8,fill="#8193e8",width=2,smooth=True)
+        mark.create_polygon(24,35,8,25,7,14,20,19,fill="#596bb9",outline="")
+        mark.create_polygon(28,27,39,13,45,10,42,25,fill="#8293e8",outline="")
+        mark.create_polygon(30,19,23,8,27,1,36,12,fill="#c5ceff",outline="")
+        mark.create_polygon(29,18,39,19,47,27,34,28,fill="#7184d8",outline="")
+        mark.create_polygon(25,19,15,9,14,2,25,9,fill="#9eafff",outline="")
+        mark.create_oval(25,16,31,22,fill="#e2e7ff",outline="")
+        brandtext=tk.Frame(brand,bg=SIDE); brandtext.pack(side="left",padx=(8,0),pady=(5,0))
+        tk.Label(brandtext,text="XYRIN",bg=SIDE,fg="#dce2ff",font=("DejaVu Serif",20)).pack(anchor="w")
+        tk.Label(brandtext,text="FLOWER  //  RENDER XFA",bg=SIDE,fg="#8293d8",font=("Sans",7,"bold")).pack(anchor="w",pady=(0,2))
         tk.Button(side,text="＋   Yeni sohbet",command=self.new_chat,bg="#202e47",fg=FG,activebackground="#2a3b59",activeforeground=FG,relief="flat",anchor="w",padx=13,pady=11).pack(fill="x",padx=12)
         tk.Label(side,text="ÇALIŞMA ALANI",bg=SIDE,fg="#71839f",font=("Sans",8,"bold")).pack(anchor="w",padx=18,pady=(28,9))
         self.nav=tk.Label(side,text="●  Yerel Yapay Zekâ",bg=SIDE,fg=GREEN,font=("Sans",10),anchor="w"); self.nav.pack(fill="x",padx=18,pady=5)
@@ -44,8 +55,8 @@ class DesktopAI:
         main.grid_columnconfigure(0,weight=1)
         main.grid_rowconfigure(1,weight=1)
         head=tk.Frame(main,bg=BG); head.grid(row=0,column=0,sticky="ew",padx=24,pady=(12,8))
-        tk.Label(head,text="NEURAL CHAT",bg=BG,fg=FG,font=("Sans",18,"bold")).pack(side="left")
-        tk.Label(head,text="  ●  PRIVATE LOCAL SESSION",bg=BG,fg=GREEN,font=("Sans",8,"bold")).pack(side="left",padx=14,pady=(7,0))
+        tk.Label(head,text="XYRIN  /  NEURAL CHAT",bg=BG,fg=FG,font=("Sans",18,"bold")).pack(side="left")
+        tk.Label(head,text="  ●  PRIVATE SESSION",bg=BG,fg=GREEN,font=("Sans",8,"bold")).pack(side="left",padx=14,pady=(7,0))
         self.modebox=ttk.Combobox(head,textvariable=self.mode,values=("Yerel Yapay Zekâ","API Modeli","XFA Agent"),state="readonly",width=15); self.modebox.pack(side="right"); self.modebox.bind("<<ComboboxSelected>>",self._mode_changed)
         self.chat=tk.Text(main,bg=BG,fg=FG,insertbackground=FG,wrap="word",font=("Sans",11),relief="flat",padx=24,pady=10,state="disabled",borderwidth=0)
         self.chat.grid(row=1,column=0,sticky="nsew",padx=4)
