@@ -34,6 +34,7 @@ class DesktopAI:
         tk.Label(side,text="ÇALIŞMA ALANI",bg=SIDE,fg="#71839f",font=("Sans",8,"bold")).pack(anchor="w",padx=18,pady=(28,9))
         self.nav=tk.Label(side,text="●  Local AI",bg=SIDE,fg=GREEN,font=("Sans",10),anchor="w"); self.nav.pack(fill="x",padx=18,pady=5)
         tk.Label(side,text="●  XFA Agent",bg=SIDE,fg=MUTED,font=("Sans",10),anchor="w").pack(fill="x",padx=18,pady=5)
+        tk.Button(side,text="▶   Yerel modeli başlat",command=self.start_local,bg=SIDE,fg=GREEN,activebackground=PANEL2,activeforeground=GREEN,relief="flat",anchor="w",padx=13,pady=10).pack(fill="x",padx=8,pady=(10,0))
         tk.Frame(side,bg="#25324a",height=1).pack(fill="x",padx=14,pady=20)
         tk.Button(side,text="⚙   Ayarlar ve bağlantılar",command=self.open_settings,bg=SIDE,fg=MUTED,activebackground=PANEL2,activeforeground=FG,relief="flat",anchor="w",padx=13,pady=10).pack(fill="x",padx=8,side="bottom",pady=14)
         main=tk.Frame(shell,bg=BG); main.pack(side="left",fill="both",expand=True)
