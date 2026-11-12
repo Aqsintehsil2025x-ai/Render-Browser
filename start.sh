@@ -20,4 +20,11 @@ chown -R browser:browser /data /home/browser
 htpasswd -Bbc /etc/nginx/.htpasswd "$BROWSER_USER" "$BROWSER_PASSWORD"
 chmod 0600 /etc/nginx/.htpasswd
 
+AI_SERVICE_URL="${AI_SERVICE_URL:-http://127.0.0.1:10001}"
+AI_API_KEY="${AI_API_KEY:-not-configured}"
+export AI_SERVICE_URL AI_API_KEY
+
+# Substitute only the two application settings; preserve Nginx runtime variables.
+envsubst '${AI_SERVICE_URL} ${AI_API_KEY}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
+
 exec /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
