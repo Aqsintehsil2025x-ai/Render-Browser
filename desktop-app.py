@@ -5,7 +5,7 @@ from tkinter import ttk, messagebox
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 
-MODEL="Qwen/Qwen3-4B-GGUF:Q4_K_M"
+MODEL="celalkartoglu/turkish-assistant-gemma3-12b-Q4_K_M-GGUF:Q4_K_M"
 LOCAL_BASE="http://127.0.0.1:8080/v1"
 LOCAL_HEALTH="http://127.0.0.1:8080/health"
 BG="#0b1020"; SIDE="#0e1628"; PANEL="#121d30"; PANEL2="#1a2940"
@@ -16,7 +16,7 @@ class DesktopAI:
         self.root=root; root.title("RENDER // XFA — NEURAL DESKTOP"); root.geometry("1280x820"); root.minsize(900,620); root.configure(bg=BG)
         self.proc=None; self.events=queue.Queue(); self.messages=[]; self.api_key=""; self.base=LOCAL_BASE; self.model=MODEL
         self.xfa_url="https://ai-bot-2--aqsintehsil2025.replit.app/xfa/api"; self.xfa_token=""
-        self.mode=tk.StringVar(value="Yerel Yapay Zekâ"); self.busy=False; self.system_prompt="Sen Render Browser içinde çalışan, Türkçe konuşan yardımcı yapay zekâsın. Varsayılan dilin Türkiye Türkçesi olsun. Kullanıcı Azerbaycan Türkçesiyle yazarsa doğal Azerbaycan Türkçesiyle cevap ver. Kısa, açık ve dostça konuş. Bilmediğin şeyleri uydurma; küçük bir yerel model olduğunu unutma."
+        self.mode=tk.StringVar(value="Yerel Yapay Zekâ"); self.busy=False; self.system_prompt="Sen Render Browser içinde çalışan Türkçe odaklı bir yardımcı yapay zekâsın. Her zaman kullanıcının yazdığı dilde yanıt ver: Türkiye Türkçesiyle yazarsa Türkiye Türkçesi, Azerbaycan Türkçesiyle yazarsa doğal Azerbaycan Türkçesi kullan. İngilizceye geçme. Cevapların açık, doğru ve doğal olsun. Bilmediğin şeyleri uydurma."
         self._build(); root.after(100,self._drain_events); root.protocol("WM_DELETE_WINDOW",self.close)
         self.set_status("Hazır · Yerel model başlatılmayı bekliyor")
 
@@ -54,8 +54,8 @@ class DesktopAI:
         self._system("SİSTEM HAZIR  //  Merhaba! Ben Render AI. Türkçe konuşabilir, yerel modelle çevrimdışı çalışabilirim.")
         wrap=tk.Frame(main,bg=BG); wrap.pack(fill="x",padx=26,pady=(8,8))
         comp=tk.Frame(wrap,bg=PANEL,highlightbackground="#293954",highlightthickness=1); comp.pack(fill="x")
-        self.prompt=tk.Text(comp,height=3,bg=PANEL,fg=FG,insertbackground=FG,wrap="word",relief="flat",font=("Sans",11),padx=14,pady=12)
-        self.prompt.pack(fill="x",padx=2,pady=(2,0)); self.prompt.bind("<Return>",self._enter); self.prompt.bind("<Shift-Return>",self._newline)
+        self.prompt=tk.Text(comp,height=4,width=90,bg="#101b2e",fg="#f8fafc",insertbackground="#ffffff",insertwidth=2,insertontime=600,insertofftime=300,selectbackground="#8294ff",selectforeground="#08101f",wrap="word",relief="flat",font=("DejaVu Sans",12),padx=16,pady=14,highlightthickness=1,highlightbackground="#344767",highlightcolor="#9aa8ff",takefocus=True,undo=True,autoseparators=True,maxundo=-1)
+        self.prompt.pack(fill="x",padx=3,pady=(3,0)); self.prompt.bind("<Return>",self._enter); self.prompt.bind("<Shift-Return>",self._newline); self.root.after(250,self.prompt.focus_set)
         bar=tk.Frame(comp,bg=PANEL); bar.pack(fill="x",padx=9,pady=(2,8))
         tk.Label(bar,text="ENTER  GÖNDER   ·   SHIFT + ENTER  YENİ SATIR",bg=PANEL,fg="#8da2c2",font=("Sans",8,"bold")).pack(side="left",padx=5)
         self.sendbtn=ttk.Button(bar,text="Gönder  ↑",style="Accent.TButton",command=self.send); self.sendbtn.pack(side="right")
@@ -122,7 +122,7 @@ class DesktopAI:
         if self.busy:return
         text=self.prompt.get("1.0","end").strip()
         if not text:return
-        self.prompt.delete("1.0","end"); self._append(text,True); self.busy=True; self.sendbtn.configure(state="disabled")
+        self.prompt.delete("1.0","end"); self.prompt.configure(fg="#f8fafc",insertbackground="#ffffff"); self._append(text,True); self.busy=True; self.sendbtn.configure(state="disabled")
         mode=self.mode.get(); self.set_status("XFA görevi yürütülüyor…" if mode=="XFA Agent" else "Yanıt hazırlanıyor…")
         if mode!="XFA Agent":self.messages.append({"role":"user","content":text})
         threading.Thread(target=self._send_worker,args=(mode,text),daemon=True).start()
