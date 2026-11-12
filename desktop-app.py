@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Render Browser + XFA native dark chat workspace."""
-import json, queue, shutil, subprocess, threading, time, tkinter as tk
+import base64, json, queue, shutil, subprocess, threading, time, tkinter as tk
 from tkinter import ttk, messagebox
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 
 MODEL="celalkartoglu/turkish-assistant-gemma3-12b-Q4_K_M-GGUF:Q4_K_M"
 MODEL_ALIAS="render-gemma3-12b"
+ICON_PNG="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"
 LOCAL_BASE="http://127.0.0.1:8081/v1"
 LOCAL_HEALTH="http://127.0.0.1:8081/health"
 BG="#0b1020"; SIDE="#0e1628"; PANEL="#121d30"; PANEL2="#1a2940"
@@ -14,7 +15,7 @@ FG="#e8eef8"; MUTED="#91a2bb"; ACCENT="#9aa8ff"; GREEN="#69d6ae"
 
 class DesktopAI:
     def __init__(self, root):
-        self.root=root; root.title("Xyrin Flower — Render // XFA"); sw=root.winfo_screenwidth(); sh=root.winfo_screenheight(); ww=min(1180,max(760,sw-80)); wh=min(760,max(520,sh-140)); root.geometry(f"{ww}x{wh}+40+40"); root.minsize(760,520); root.configure(bg=BG)
+        self.root=root; root.title("Xyrin Flower — Render // XFA"); sw=root.winfo_screenwidth(); sh=root.winfo_screenheight(); ww=min(1180,max(760,sw-80)); wh=min(760,max(520,sh-140)); root.geometry(f"{ww}x{wh}+40+40"); root.minsize(760,520); root.configure(bg=BG); self.window_icon=tk.PhotoImage(data=ICON_PNG); root.iconphoto(True,self.window_icon)
         self.proc=None; self.events=queue.Queue(); self.messages=[]; self.api_key=""; self.base=LOCAL_BASE; self.model=MODEL
         self.xfa_url="https://ai-bot-2--aqsintehsil2025.replit.app/xfa/api"; self.xfa_token=""
         self.mode=tk.StringVar(value="Yerel Yapay Zekâ"); self.busy=False; self.system_prompt="Sen Render Browser içinde çalışan Türkçe odaklı bir yardımcı yapay zekâsın. Her zaman kullanıcının yazdığı dilde yanıt ver: Türkiye Türkçesiyle yazarsa Türkiye Türkçesi, Azerbaycan Türkçesiyle yazarsa doğal Azerbaycan Türkçesi kullan. İngilizceye geçme. Cevapların açık, doğru ve doğal olsun. Bilmediğin şeyleri uydurma."
