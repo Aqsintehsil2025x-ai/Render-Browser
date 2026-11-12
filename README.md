@@ -1,3 +1,7 @@
+# Xyrin Flower — Render Browser
+
+Render Browser Local AI is branded as **Xyrin Flower**, with a dark indigo desktop identity, floral mark, and matching Linux application-menu icon.
+
 # Render Browser
 
 A small, isolated browser desktop that can be deployed as a Render **Docker Web Service**.
