@@ -6,8 +6,9 @@ from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 
 MODEL="celalkartoglu/turkish-assistant-gemma3-12b-Q4_K_M-GGUF:Q4_K_M"
-LOCAL_BASE="http://127.0.0.1:8080/v1"
-LOCAL_HEALTH="http://127.0.0.1:8080/health"
+MODEL_ALIAS="render-gemma3-12b"
+LOCAL_BASE="http://127.0.0.1:8081/v1"
+LOCAL_HEALTH="http://127.0.0.1:8081/health"
 BG="#0b1020"; SIDE="#0e1628"; PANEL="#121d30"; PANEL2="#1a2940"
 FG="#e8eef8"; MUTED="#91a2bb"; ACCENT="#9aa8ff"; GREEN="#69d6ae"
 
@@ -113,7 +114,7 @@ class DesktopAI:
         try:
             try:self._request(LOCAL_HEALTH,timeout=2); self.events.put(("status","Yerel model zaten çalışıyor.")); return
             except Exception:pass
-            cmd=["llama","serve","-hf",MODEL,"--alias",MODEL,"--host","127.0.0.1","--port","8080","--ctx-size","2048","--n-predict","256","--parallel","1"]
+            cmd=["llama","serve","-hf",MODEL,"--alias",MODEL_ALIAS,"--host","127.0.0.1","--port","8080","--ctx-size","2048","--n-predict","256","--parallel","1"]
             self.proc=subprocess.Popen(cmd,stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
             for _ in range(240):
                 if self.proc.poll() is not None:raise RuntimeError("llama serve kapandı. Terminalde llama serve --help çıktısını kontrol et.")
@@ -138,7 +139,7 @@ class DesktopAI:
                 data=json.loads(raw.decode()); self.events.put(("answer",data.get("answer") or data.get("plan") or json.dumps(data,ensure_ascii=False))); return
             h={"Content-Type":"application/json"}
             if mode=="API Modeli" and self.api_key:h["Authorization"]="Bearer "+self.api_key
-            base=LOCAL_BASE if mode=="Yerel Yapay Zekâ" else self.base; model=MODEL if mode=="Yerel Yapay Zekâ" else self.model
+            base=LOCAL_BASE if mode=="Yerel Yapay Zekâ" else self.base; model=MODEL_ALIAS if mode=="Yerel Yapay Zekâ" else self.model
             body={"model":model,"messages":[{"role":"system","content":self.system_prompt}]+self.messages,"temperature":0.65,"max_tokens":640,"stream":False}
             _,raw=self._request(base+"/chat/completions",body,h,300)
             answer=json.loads(raw.decode())["choices"][0]["message"]["content"]
