@@ -114,7 +114,7 @@ class DesktopAI:
         try:
             try:self._request(LOCAL_HEALTH,timeout=2); self.events.put(("status","Yerel model zaten çalışıyor.")); return
             except Exception:pass
-            cmd=["llama","serve","-hf",MODEL,"--alias",MODEL_ALIAS,"--host","127.0.0.1","--port","8080","--ctx-size","2048","--n-predict","256","--parallel","1"]
+            cmd=["llama","serve","-hf",MODEL,"--alias",MODEL_ALIAS,"--host","127.0.0.1","--port","8081","--ctx-size","2048","--n-predict","256","--parallel","1"]
             self.proc=subprocess.Popen(cmd,stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
             for _ in range(240):
                 if self.proc.poll() is not None:raise RuntimeError("llama serve kapandı. Terminalde llama serve --help çıktısını kontrol et.")
