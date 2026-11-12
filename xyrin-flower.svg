@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<defs>
+ <radialGradient id="bg" cx="50%" cy="42%" r="72%"><stop stop-color="#111a32"/><stop offset="1" stop-color="#05070e"/></radialGradient>
+ <linearGradient id="petal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dce3ff"/><stop offset=".52" stop-color="#8297ed"/><stop offset="1" stop-color="#3b4f9b"/></linearGradient>
+ <filter id="glow"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="512" height="512" rx="112" fill="url(#bg)"/>
+<circle cx="256" cy="256" r="207" fill="none" stroke="#7183c9" stroke-opacity=".18" stroke-width="2"/>
+<g filter="url(#glow)" transform="translate(256 246)">
+ <path d="M0 0 C-52 -62 -49 -124 -9 -170 C35 -122 38 -59 0 0Z" fill="url(#petal)"/>
+ <path d="M0 0 C27 -80 82 -113 143 -105 C126 -40 72 0 0 0Z" fill="#7187df"/>
+ <path d="M0 0 C83 -14 136 17 157 74 C89 91 34 58 0 0Z" fill="#5369b7"/>
+ <path d="M0 0 C51 65 48 123 6 168 C-38 120 -39 58 0 0Z" fill="#8799eb"/>
+ <path d="M0 0 C-30 79 -86 109 -145 98 C-126 36 -73 -4 0 0Z" fill="#6479c8"/>
+ <path d="M0 0 C-80 13 -135 -17 -157 -73 C-91 -92 -35 -58 0 0Z" fill="#aab8ff"/>
+ <path d="M0 0 C-26 -82 4 -140 53 -169 C78 -101 52 -42 0 0Z" fill="#c5ceff"/>
+ <circle r="19" fill="#edf0ff"/>
+ <path d="M-4 19 C-15 77 -30 126 -59 185" fill="none" stroke="#657bc8" stroke-width="8" stroke-linecap="round"/>
+ <path d="M-31 110 C-87 80 -113 88 -145 122 C-87 144 -52 137 -31 110Z" fill="#394b91"/>
+ <path d="M-46 145 C5 116 43 127 68 161 C18 185 -19 177 -46 145Z" fill="#5368ae"/>
+</g>
+</svg>
